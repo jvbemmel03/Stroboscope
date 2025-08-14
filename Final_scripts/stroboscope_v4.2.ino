@@ -13,7 +13,7 @@ Switch Encoder: D6
 SDA: A5
 SCL: A4
 
-Jasper van Bemmel 14-08-2025
+Jasper van Bemmel 13-08-2025
 */
 
 // libraries
@@ -32,7 +32,7 @@ const int encoderButton = 5;
 const int encoderCLK = 2;
 const int encoderDT = 4;
 
-int pwmFreq2 = 1000;          // frequency pwm2
+int pwmFreq2 = 500;          // frequency pwm2
 bool lastSwitchState = false; // bool for switching modes
 
 // variables encoder
@@ -78,6 +78,7 @@ float measureFrequency() {
     }
   }
 
+  if (frequency > 400){ frequency = 0; }
   return frequency;
 }
 
@@ -165,9 +166,6 @@ void loop() {
       // limits readings
       if (freqManual > 100.0) freqManual = 0.0;
       else if (freqManual < 0.0) freqManual = 100.0;
-
-      Serial.print("f (Hz): ");
-      Serial.println(freqManual, 1);
     }
 
     if (digitalRead(encoderButton) == LOW) {
@@ -240,8 +238,6 @@ void loop() {
       freqAuto += delta * 0.1;
       freqAuto = constrain(freqAuto, 0.0, 5.0);
 
-      Serial.print("Auto freqManual: ");
-      Serial.println(freqAuto, 1);
     }
 
     lcd.setCursor(6, 0); lcd.print("PW(%)");
@@ -278,7 +274,6 @@ void loop() {
     float freqDetected = measureFrequency();
     
     if (freqDetected < 200) {
-      Serial.println(freqDetected);
     
       // PWM settings
       Timer1.setPeriod(1000000 / (freqAuto + freqDetected));
